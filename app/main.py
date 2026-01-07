@@ -6,6 +6,8 @@ import time
 from app.scpi import SCPIDevice
 from app.transport import SerialTransport
 from app.logger import log_event
+from app.schemas import ConfResponse, MeasureResponse
+
 
 app = FastAPI()
 
@@ -15,24 +17,24 @@ transport = SerialTransport(device)
 # -----------------------------
 # REST endpoint to CONF
 # -----------------------------
-@app.post("/conf")
+@app.post("/conf", response_model=ConfResponse)
 async def conf_voltage(mode: str = Query("VOLT")):
     """Set the measurement mode"""
     command = f"CONF:{mode.upper()}"
     response = await transport.send(command)
     await log_event(command, response)
-    return {"status": response, "mode": mode.upper()}
-
+    return ConfResponse(status=response, mode=mode.upper())
 # -----------------------------
 # REST endpoint to MEAS
 # -----------------------------
-@app.get("/measure")
+
+@app.get("/measure", response_model=MeasureResponse)
 async def measure_voltage():
     """Return a measurement"""
     command = "MEAS:VOLT?"
     value = await transport.send(command)
     await log_event(command, value)
-    return {"value": value, "timestamp": time.time()}
+    return MeasureResponse(value=float(value), timestamp=time.time())
 
 # -----------------------------
 # Manual SCPI WebSocket
