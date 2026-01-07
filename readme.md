@@ -2,26 +2,34 @@
 
 SCPI Voltage measuements using FastAPI
 
+Key Features:
 
-Can use HTTP hooks and using JSON for data storage.
+1. SCPI Command Simulation
+2. Async Backend
+3. Frontend with Plotly
+4. JSON Logging
+5. HTTP hooks
+6. Poetry Dependency management
 
+Example frontend auto measure:
+![til](./assets/images/auto-meausre.gif)
 
-Includes Poetry for Dependency management advantage.
+Example frontend manual measure:
+![til](./assets/images/manual-measure.gif)
 
-# One timer 
+## One timer 
 
-## Dependencies
-Poetry
-Python3 
-plotly
-AsyncIO
-FastAPI
+poetry install
 
-# Start project
+## Start project
 
 poetry run uvicorn app.main:app --reload
 
-## Test SCPI endpoints
+## Open Web server
+
+http://127.0.0.1:8000/
+
+## Optional: Test SCPI endpoints
 
 curl -X POST "http://127.0.0.1:8000/conf?mode=VOLT"
 
@@ -38,15 +46,9 @@ Output example:
 {"value":"3.018","timestamp":1767781488.1346893}
 
 
-## Install cargo depdendencies
-
-poetry install
-
-
-
 # FAQ
 
-## AsyncIO:
+## AsyncIO funcionality:
 
 1. Websocket handlers
 
@@ -78,7 +80,6 @@ Simulates non-blocking I/O (like real hardware response time).
 Allows the event loop to serve other clients while waiting, providing real concurrency.
 
 
-## How is the data saved?
+## Where is the data saved?
 
-In Json format in root folder: 
-/scpi-fastapi/scpi_log.jsonl
+./scpi-fastapi/scpi_log.jsonl
