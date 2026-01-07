@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "scpi-fastapi"
+version = "0.1.0"
+description = "SCPI over FastAPI example for embedded systems"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110"
+uvicorn = {extras = ["standard"], version = "^0.40.0"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+

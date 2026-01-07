@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SCPI Visualization</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+
+<body style="font-family:sans-serif">
+<h2>Manual SCPI Measurement</h2>
+<button onclick="send('CONF:VOLT')">CONF:VOLT</button>
+<button onclick="send('MEAS:VOLT?')">MEAS:VOLT?</button>
+
+<div id="plot_manual" style="width:700px;height:300px;"></div>
+
+<hr style="border-color:#aaa;">
+
+<h2>Last 100 Measurements (Auto Streaming)</h2>
+<div id="plot_auto" style="width:700px;height:300px;"></div>
+
+<script>
+// --------------------
+// Manual plot (button-driven)
+// --------------------
+const ws_manual = new WebSocket("ws://localhost:8000/ws/scpi");
+let xm = [], ym = [];
+
+Plotly.newPlot("plot_manual", [{x:xm, y:ym, mode:"lines+markers", line:{color:"cyan"}}], {
+    paper_bgcolor: "black",
+    plot_bgcolor: "black",
+    font: {color:"white"},
+    xaxis:{title:"Time"}, yaxis:{title:"Voltage [V]"}
+});
+
+ws_manual.onmessage = (event)=>{
+    const msg = JSON.parse(event.data);
+    const v = parseFloat(msg.value);
+    const t = new Date();
+    xm.push(t); ym.push(v);
+    Plotly.update("plot_manual",{x:[xm],y:[ym]});
+};
+
+function send(cmd){ ws_manual.send(cmd); }
+
+// --------------------
+// Auto plot (last 100 values)
+// --------------------
+const ws_auto = new WebSocket("ws://localhost:8000/ws/auto");
+let xa = [], ya = [];
+
+Plotly.newPlot("plot_auto", [{x:xa, y:ya, mode:"lines", line:{color:"lime"}}], {
+    paper_bgcolor: "black",
+    plot_bgcolor: "black",
+    font: {color:"white"},
+    xaxis:{title:"Time"}, yaxis:{title:"Voltage [V]"}
+});
+
+ws_auto.onmessage = (event)=>{
+    const msg = JSON.parse(event.data);
+    const v = parseFloat(msg.value);
+    const t = new Date();
+    xa.push(t); ya.push(v);
+    if(xa.length>100){ xa.shift(); ya.shift(); }  // keep last 100
+    Plotly.update("plot_auto",{x:[xa],y:[ya]});
+};
+</script>
+</body>
+</html>
+
